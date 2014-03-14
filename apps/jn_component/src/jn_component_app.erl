@@ -11,6 +11,9 @@
 %%% Application callbacks
 %%%===================================================================
 
+start() ->
+    application:start(jn_component).
+
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -28,7 +31,7 @@
 %% @end
 %%--------------------------------------------------------------------
 start() ->
-    application:start(jn_component).
+	application:start(jn_component).
 
 start(_StartType, _StartArgs) ->
     ?INFO_MSG("Loading Application", []),
