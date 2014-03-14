@@ -32,9 +32,8 @@ start() ->
 
 start(_StartType, _StartArgs) ->
     ?INFO_MSG("Loading Application", []),
-    [Conf] = confetti:fetch(mgmt_conf),
     prepare_tables(),
-    JNConf = proplists:get_value(jn_component, Conf, []),
+    JNConf = application:get_all_env(jn_component),
     {InitPort, EndPort} = proplists:get_value(port_range, JNConf),
     {MaxPerPeriod, PeriodSeconds} = proplists:get_value(throttle, JNConf),
     jn_component_sup:start_link(#jnstate{
