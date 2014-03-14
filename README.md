@@ -65,15 +65,15 @@ The configuration file is in ```rel/jinglenodes/etc/app.config```, you need to c
     ]},
 ```
 
-Note that the info related to [ecomponent](https://github.com/pepeyuilop/ecomponent) can be reviewed in it own site.
+Note that the info related to [ecomponent](https://github.com/artefactop/ecomponent) can be reviewed in it own site.
 
 The params means:
 
   * ```jid```, the component JID.
   * ```port_range```, the range for select ports (could be from 1024 to 65535).
   * ```throttle```, has two values:
-    * ```max_per_period``` (the first) is the time (in seconds) between checks relay channels.
-    * ```period_seconds``` (the second) is the timeout (in seconds) for channels.
+  * ```max_per_period``` (the first) is the time (in seconds) between checks relay channels.
+  * ```period_seconds``` (the second) is the timeout (in seconds) for channels.
   * ```public_ip```, is the host as an IP in the IQ request channel result.
   * ```handler```, the handler to be used. The fix value in this moment is ```jingle_handler```.
   * ```broadcast```, the server to send the notify events.
@@ -99,7 +99,15 @@ Suggested Library Install
 
 Building
 
-    rebar clean
-    rebar get-deps
-    rebar compile
-    rebar generate
+```
+rebar clean
+rebar get-deps
+rebar compile
+rebar generate
+```
+
+## Statistics
+
+Get statistics with folswom_coboy api https://github.com/altenwald/folsom_cowboy#api
+
+For example, you can check active relays with http://localhost:5574/_metrics/active_relays

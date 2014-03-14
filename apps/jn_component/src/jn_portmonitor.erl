@@ -13,28 +13,28 @@
 
 %% gen_server callbacks
 -export([start_link/2, init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+    terminate/2, code_change/3]).
 
 
 start_link(MinPort, MaxPort) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [MinPort, MaxPort], []).
 
 
--spec get_port() -> {ok, Port::integer()} | {error, Reason::string()}.
+-spec get_port() -> {ok, Port :: integer()} | {error, Reason :: string()}.
 
 get_port() ->
-	get_port(5).
+    get_port(5).
 
--spec get_port(Timeout::integer()) -> {ok, Port::integer()} | {error, Reason::string()}.
+-spec get_port(Timeout :: integer()) -> {ok, Port :: integer()} | {error, Reason :: string()}.
 
-get_port(0) -> 
-    ?ERROR_MSG("Problem Retrieving Port Number",[]),
+get_port(0) ->
+    ?ERROR_MSG("Problem Retrieving Port Number", []),
     {error, "Problem Retrieving Port Number"};
 get_port(T) ->
-	case gen_server:call(?SERVER, get_port, 200) of
-		timeout -> get_port(T-1);
-		Any -> Any
-	end.
+    case gen_server:call(?SERVER, get_port, 200) of
+        timeout -> get_port(T - 1);
+        Any -> Any
+    end.
 
 %%====================================================================
 %% gen_server callbacks
@@ -49,7 +49,7 @@ get_port(T) ->
 %%--------------------------------------------------------------------
 
 init([MinPort, MaxPort]) ->
-	{ok, #port_mgr{minPort=MinPort, maxPort=MaxPort, port=MinPort}}.
+    {ok, #port_mgr{minPort = MinPort, maxPort = MaxPort, port = MinPort}}.
 
 %%--------------------------------------------------------------------
 %% Function: handle_info(Info, State) -> {noreply, State} |
@@ -57,7 +57,7 @@ init([MinPort, MaxPort]) ->
 %%                                       {stop, Reason, State}
 %% Description: Handling all non call/cast messages
 %%--------------------------------------------------------------------
-handle_info(Record, State) -> 
+handle_info(Record, State) ->
     ?INFO_MSG("Unknown Info Request: ~p~n", [Record]),
     {noreply, State}.
 
@@ -68,7 +68,7 @@ handle_info(Record, State) ->
 %% Description: Handling cast messages
 %%--------------------------------------------------------------------
 handle_cast(_Msg, State) ->
-    ?INFO_MSG("Received: ~p~n", [_Msg]), 
+    ?INFO_MSG("Received: ~p~n", [_Msg]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -81,12 +81,12 @@ handle_cast(_Msg, State) ->
 %% Description: Handling call messages
 %%--------------------------------------------------------------------
 handle_call(get_port, _From, Port) ->
-	{P, NewPort} = pull_port(Port),
-	{reply, {ok, P}, NewPort};
+    {P, NewPort} = pull_port(Port),
+    {reply, {ok, P}, NewPort};
 handle_call(stop, _From, Port) ->
-	{stop, normal, ok, Port};
-handle_call(Info,_From, _State) ->
-    ?ERROR_MSG("Invalid Message Received by Port Monitor: ~p",[Info]),
+    {stop, normal, ok, Port};
+handle_call(Info, _From, _State) ->
+    ?ERROR_MSG("Invalid Message Received by Port Monitor: ~p", [Info]),
     {reply, ok, _State}.
 
 %%--------------------------------------------------------------------
@@ -96,7 +96,7 @@ handle_call(Info,_From, _State) ->
 %% cleaning up. When it returns, the gen_server terminates with Reason.
 %% The return value is ignored.
 %%--------------------------------------------------------------------
-terminate(_Reason, _) -> 
+terminate(_Reason, _) ->
     ok.
 
 %%--------------------------------------------------------------------
@@ -111,7 +111,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%--------------------------------------------------------------------
 
-pull_port(#port_mgr{minPort=InitPort, maxPort=EndPort, port=P}) when P > EndPort -> 
-    pull_port(#port_mgr{minPort=InitPort, maxPort=EndPort, port=InitPort});
-pull_port(#port_mgr{minPort=InitPort, maxPort=EndPort, port=P}) ->
-    {P, #port_mgr{minPort=InitPort, maxPort=EndPort, port=P+4}}.
+pull_port(#port_mgr{minPort = InitPort, maxPort = EndPort, port = P}) when P > EndPort ->
+    pull_port(#port_mgr{minPort = InitPort, maxPort = EndPort, port = InitPort});
+pull_port(#port_mgr{minPort = InitPort, maxPort = EndPort, port = P}) ->
+    {P, #port_mgr{minPort = InitPort, maxPort = EndPort, port = P + 4}}.

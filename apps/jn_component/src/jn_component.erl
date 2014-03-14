@@ -21,7 +21,7 @@
 
 %% gen_server callbacks
 -export([start_link/1, init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+    terminate/2, code_change/3]).
 
 start_link(State) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, State, []).
@@ -48,11 +48,11 @@ init(State) when is_record(State, jnstate) ->
 %% Description: Handling all non call/cast messages
 %%--------------------------------------------------------------------
 
-handle_info({iq,#params{type=Type}=Params}, #jnstate{handler=Handler}=State) ->
+handle_info({iq, #params{type = Type} = Params}, #jnstate{handler = Handler} = State) ->
     spawn(Handler, process_iq, [Type, Params, State]),
     {noreply, State};
 
-handle_info(Record, State) -> 
+handle_info(Record, State) ->
     ?INFO_MSG("Unknown Info Request: ~p~n", [Record]),
     {noreply, State}.
 
@@ -62,12 +62,12 @@ handle_info(Record, State) ->
 %%                                      {stop, Reason, State}
 %% Description: Handling cast messages
 %%--------------------------------------------------------------------
-handle_cast({notify_channel, ID, User, Event, Time}, #jnstate{handler=Handler}=State) ->
+handle_cast({notify_channel, ID, User, Event, Time}, #jnstate{handler = Handler} = State) ->
     spawn(Handler, notify_channel, [ID, User, Event, Time, State]),
     {noreply, State};
 
 handle_cast(_Msg, State) ->
-    ?INFO_MSG("Received: ~p~n", [_Msg]), 
+    ?INFO_MSG("Received: ~p~n", [_Msg]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -81,8 +81,8 @@ handle_cast(_Msg, State) ->
 %%--------------------------------------------------------------------
 handle_call(stop, _From, State) ->
     {stop, normal, ok, State};
-handle_call(Info,_From, State) ->
-    ?INFO_MSG("Received Call: ~p~n", [Info]), 
+handle_call(Info, _From, State) ->
+    ?INFO_MSG("Received Call: ~p~n", [Info]),
     {reply, ok, State}.
 
 %%--------------------------------------------------------------------
@@ -92,7 +92,7 @@ handle_call(Info,_From, State) ->
 %% cleaning up. When it returns, the gen_server terminates with Reason.
 %% The return value is ignored.
 %%--------------------------------------------------------------------
-terminate(_Reason, _) -> 
+terminate(_Reason, _) ->
     gen_server:call(jn_schedule, stop),
     gen_server:call(jn_portmonitor, stop),
     application:stop(exmpp),
