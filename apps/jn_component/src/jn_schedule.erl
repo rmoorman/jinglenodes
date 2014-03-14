@@ -13,12 +13,12 @@
 
 %% gen_server callbacks
 -export([start_link/2, init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+    terminate/2, code_change/3]).
 
 -record(state, {
-	period :: integer(),
-	relays = [] :: list(#relay{}), 
-	timeout :: integer()
+    period :: integer(),
+    relays = [] :: list(#relay{}),
+    timeout :: integer()
 }).
 
 start_link(Period, Timeout) ->
@@ -29,15 +29,15 @@ start_link(Period, Timeout) ->
 get_stats() ->
     get_stats(3).
 
--spec get_stats(Timeout::integer()) -> integer().
+-spec get_stats(Timeout :: integer()) -> integer().
 
-get_stats(0) -> 
-	-1;
+get_stats(0) ->
+    -1;
 get_stats(N) ->
-	case gen_server:call(?SERVER, get_active, 100) of
-		timeout -> get_stats(N-1);
-		{result_active, A} -> A
-	end.
+    case gen_server:call(?SERVER, get_active, 100) of
+        timeout -> get_stats(N - 1);
+        {result_active, A} -> A
+    end.
 
 
 %%====================================================================
@@ -57,7 +57,7 @@ init([PeriodSec, TimeoutSec]) ->
     Timeout = TimeoutSec * 1000,
     ?INFO_MSG("Schedule, Period=~p Timeout=~p~n", [Period, Timeout]),
     timer:send_after(Period, timeout),
-	{ok, #state{period=Period, timeout=Timeout}}.
+    {ok, #state{period = Period, timeout = Timeout}}.
 
 %%--------------------------------------------------------------------
 %% Function: handle_info(Info, State) -> {noreply, State} |
@@ -65,11 +65,11 @@ init([PeriodSec, TimeoutSec]) ->
 %%                                       {stop, Reason, State}
 %% Description: Handling all non call/cast messages
 %%--------------------------------------------------------------------
-handle_info(timeout, #state{relays=Relays,timeout=Timeout, period=Period}=State) ->
+handle_info(timeout, #state{relays = Relays, timeout = Timeout, period = Period} = State) ->
     Remain = check_relays(Relays, Timeout),
     timer:send_after(Period, timeout),
-    {noreply, State#state{relays=Remain}};
-handle_info(Record, State) -> 
+    {noreply, State#state{relays = Remain}};
+handle_info(Record, State) ->
     ?INFO_MSG("Unknown Info Request: ~p~n", [Record]),
     {noreply, State}.
 
@@ -79,10 +79,10 @@ handle_info(Record, State) ->
 %%                                      {stop, Reason, State}
 %% Description: Handling cast messages
 %%--------------------------------------------------------------------
-handle_cast(NewRelay, #state{relays=Relays}=State) when is_record(NewRelay, relay) ->
-	{noreply, State#state{relays=[NewRelay|Relays]}};
+handle_cast(NewRelay, #state{relays = Relays} = State) when is_record(NewRelay, relay) ->
+    {noreply, State#state{relays = [NewRelay | Relays]}};
 handle_cast(_Msg, State) ->
-    ?INFO_MSG("Received: ~p~n", [_Msg]), 
+    ?INFO_MSG("Received: ~p~n", [_Msg]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -94,14 +94,14 @@ handle_cast(_Msg, State) ->
 %%                                      {stop, Reason, State}
 %% Description: Handling call messages
 %%--------------------------------------------------------------------
-handle_call(get_active, _From, #state{relays=Relays}=State) ->
-	Active = length(Relays),
-	?INFO_MSG("Active Channels ~p~n", [Active]),
-	{reply, {result_active, Active}, State};
+handle_call(get_active, _From, #state{relays = Relays} = State) ->
+    Active = length(Relays),
+    ?INFO_MSG("Active Channels ~p~n", [Active]),
+    {reply, {result_active, Active}, State};
 handle_call(stop, _From, State) ->
-	{stop, normal, ok, State};
-handle_call(Info,_From, State) ->
-    ?ERROR_MSG("Invalid Message Received by Port Monitor: ~p",[Info]),
+    {stop, normal, ok, State};
+handle_call(Info, _From, State) ->
+    ?ERROR_MSG("Invalid Message Received by Port Monitor: ~p", [Info]),
     {reply, ok, State}.
 
 %%--------------------------------------------------------------------
@@ -111,7 +111,7 @@ handle_call(Info,_From, State) ->
 %% cleaning up. When it returns, the gen_server terminates with Reason.
 %% The return value is ignored.
 %%--------------------------------------------------------------------
-terminate(_Reason, _) -> 
+terminate(_Reason, _) ->
     ok.
 
 %%--------------------------------------------------------------------
@@ -126,30 +126,30 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%--------------------------------------------------------------------
 
--spec check_relay(Relay::#relay{}, Timeout::integer()) -> boolean().
+-spec check_relay(Relay :: #relay{}, Timeout :: integer()) -> boolean().
 
-check_relay(#relay{pid= PID, user=U, id=ID, creationTime=CT}, Timeout) ->
-    {TL, TR, NP} = gen_server:call(PID, get_timestamp), 
-    lager:debug("user:~p; timeout local:~w; timeout remote:~w; packets=~w~n", [U,TL,TR,NP]),
-    DeltaL = timer:now_diff(now(), TL)/1000,
-    UsedL =  timer:now_diff(TL, CT),
-    DeltaR = timer:now_diff(now(), TR)/1000,
-    UsedR =  timer:now_diff(TR, CT),
-    Used = trunc(max(UsedL, UsedR)/1000000),
+check_relay(#relay{pid = PID, user = U, id = ID, creationTime = CT}, Timeout) ->
+    {TL, TR, NP} = gen_server:call(PID, get_timestamp),
+    lager:debug("user:~p; timeout local:~w; timeout remote:~w; packets=~w~n", [U, TL, TR, NP]),
+    DeltaL = timer:now_diff(now(), TL) / 1000,
+    UsedL = timer:now_diff(TL, CT),
+    DeltaR = timer:now_diff(now(), TR) / 1000,
+    UsedR = timer:now_diff(TR, CT),
+    Used = trunc(max(UsedL, UsedR) / 1000000),
     if
-    DeltaL > Timeout orelse DeltaR > Timeout ->
-        ?INFO_MSG("Channel Killed: ~p Used for:~ps Processed:~p packets~n", [U, Used, NP]),
-        gen_server:cast(PID, stop),
-        gen_server:cast(jn_component, {notify_channel, ID, U, killed, Used}),
-        false;
-    true -> 
-        true
+        DeltaL > Timeout orelse DeltaR > Timeout ->
+            ?INFO_MSG("Channel Killed: ~p Used for:~ps Processed:~p packets~n", [U, Used, NP]),
+            gen_server:cast(PID, stop),
+            gen_server:cast(jn_component, {notify_channel, ID, U, killed, Used}),
+            false;
+        true ->
+            true
     end.
 
--spec check_relays(Relays::[#relay{}], Timeout::integer()) -> [#relay{}].
+-spec check_relays(Relays :: [#relay{}], Timeout :: integer()) -> [#relay{}].
 
 check_relays(Relays, Timeout) ->
     lager:debug("Check relays: ~p~n", [Relays]),
-	lists:filter(fun(R) ->
-		check_relay(R, Timeout)
-	end, Relays).
+    lists:filter(fun(R) ->
+        check_relay(R, Timeout)
+    end, Relays).
