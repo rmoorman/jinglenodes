@@ -5,17 +5,17 @@
 -include_lib("eunit/include/eunit.hrl").
 
 setup_test_() ->
-    {setup, 
+    {setup,
         fun init_per_suite/0,
         fun end_per_suite/1,
-        fun (Config) -> [
+        fun(Config) -> [
             init_and_stop(Config),
             get_ports(Config)
         ] end
     }.
 
 init_per_suite() ->
-    jn_portmonitor:start_link(1,10),
+    jn_portmonitor:start_link(1, 10),
     ok.
 
 end_per_suite(_Config) ->
@@ -35,9 +35,9 @@ init_and_stop(_Config) ->
             end
         ),
         ?_assertNotEqual(
-            undefined, 
+            undefined,
             begin
-                jn_portmonitor:start_link(1,10),
+                jn_portmonitor:start_link(1, 10),
                 erlang:whereis(jn_portmonitor)
             end
         )
