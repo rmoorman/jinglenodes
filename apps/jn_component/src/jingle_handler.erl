@@ -8,11 +8,11 @@
 %% API
 -export([notify_channel/5, allocate_relay/1, process_iq/3]).
 
-notify_channel(_ID, _JID, _Event, _Time, #jnstate{jid=undefined}=_State) -> 
-%% Do not broadcast
-ok;
+notify_channel(_ID, _JID, _Event, _Time, #jnstate{jid = undefined} = _State) ->
+    %% Do not broadcast
+    ok;
 
-notify_channel(ID, {Node, Domain, Resource}=JID, Event, Time, #jnstate{discount=D,broadcast=BJID,jid=CJID}=State) ->
+notify_channel(ID, {Node, Domain, Resource} = JID, Event, Time, #jnstate{discount = D, broadcast = BJID, jid = CJID} = State) ->
     From = case Node of
                undefined ->
                    CJID;
@@ -26,8 +26,8 @@ notify_channel(ID, {Node, Domain, Resource}=JID, Event, Time, #jnstate{discount=
             exmpp_xml:attribute(<<"time">>, integer_to_list(min(Time, abs(Time - D))))
         ], [])
     ),
-    ?INFO_MSG("Send channel event (A) to: ~p@~p/~p~n", [Node,Domain,Resource]),
-    SetTo = exmpp_xml:set_attribute(SetBare, <<"to">>, exmpp_jid:to_list(Node, Domain, Resource)),  
+    ?INFO_MSG("Send channel event (A) to: ~p@~p/~p~n", [Node, Domain, Resource]),
+    SetTo = exmpp_xml:set_attribute(SetBare, <<"to">>, exmpp_jid:to_list(Node, Domain, Resource)),
     ecomponent:send(SetTo, jn_component),
     Broadcast = notify_handler:notify_channel(ID, JID, Event, Time, BJID),
     case Broadcast of

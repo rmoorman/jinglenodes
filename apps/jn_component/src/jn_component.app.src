@@ -2,7 +2,7 @@
     [{description, "Jingle Relay"},
         {vsn, git},
         {registered, [jnrelay]},
-        {applications, [ecomponent]},
+        {applications, [ecomponent, folsom_cowboy]},
         {mod, {jn_component_app, []}}
     ]
 }.
