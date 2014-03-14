@@ -14,6 +14,7 @@
 
 -define(INFO_MSG(M, P), lager:info(M, P)).
 -define(ERROR_MSG(M, P), lager:error(M, P)).
+-define(DEBUG_MSG(M, P), lager:debug(M, P)).
 
 %% API
 -export([start/2, start_link/2]).

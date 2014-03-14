@@ -26,7 +26,7 @@ notify_channel(ID, {Node, Domain, Resource}=JID, Event, Time, #jnstate{discount=
             exmpp_xml:attribute(<<"time">>, integer_to_list(min(Time, abs(Time - D))))
         ], [])
     ),
-    lager:info("Send channel event (A) to: ~p@~p/~p~n", [Node,Domain,Resource]),
+    ?INFO_MSG("Send channel event (A) to: ~p@~p/~p~n", [Node,Domain,Resource]),
     SetTo = exmpp_xml:set_attribute(SetBare, <<"to">>, exmpp_jid:to_list(Node, Domain, Resource)),  
     ecomponent:send(SetTo, jn_component),
     Broadcast = notify_handler:notify_channel(ID, JID, Event, Time, BJID),
@@ -34,7 +34,7 @@ notify_channel(ID, {Node, Domain, Resource}=JID, Event, Time, #jnstate{discount=
         undefined ->
             ok;
         _ ->
-            lager:info("Send channel event (B) to: ~p~n", [From]),
+            ?INFO_MSG("Send channel event (B) to: ~p~n", [From]),
             BroadcastFrom = exmpp_xml:set_attribute(Broadcast, <<"from">>, From),
             ecomponent:send(BroadcastFrom, jn_component)
     end,

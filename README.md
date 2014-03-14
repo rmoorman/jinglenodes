@@ -105,3 +105,9 @@ rebar get-deps
 rebar compile
 rebar generate
 ```
+
+## Statistics
+
+Get statistics with folswom_coboy api https://github.com/altenwald/folsom_cowboy#api
+
+For example, you can check active relays with http://localhost:5574/_metrics/active_relays

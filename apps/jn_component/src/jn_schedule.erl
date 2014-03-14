@@ -133,7 +133,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 check_relay(#relay{pid = PID, user = U, id = ID, creationTime = CT}, Timeout) ->
     {TL, TR, NP} = gen_server:call(PID, get_timestamp),
-    lager:debug("user:~p; timeout local:~w; timeout remote:~w; packets=~w~n", [U, TL, TR, NP]),
+    ?DEBUG_MSG("user:~p; timeout local:~w; timeout remote:~w; packets=~w~n", [U, TL, TR, NP]),
     DeltaL = timer:now_diff(now(), TL) / 1000,
     UsedL = timer:now_diff(TL, CT),
     DeltaR = timer:now_diff(now(), TR) / 1000,
@@ -152,8 +152,8 @@ check_relay(#relay{pid = PID, user = U, id = ID, creationTime = CT}, Timeout) ->
 -spec check_relays(Relays :: [#relay{}], Timeout :: integer()) -> [#relay{}].
 
 check_relays(Relays, Timeout) ->
-    lager:debug("Check relays: ~p~n", [Relays]),
-	folsom_metrics:notify({active_relays, length(Relays)}),
-	lists:filter(fun(R) ->
-		check_relay(R, Timeout)
-	end, Relays).
+    ?DEBUG_MSG("Check relays: ~p~n", [Relays]),
+    folsom_metrics:notify({active_relays, length(Relays)}),
+    lists:filter(fun(R) ->
+        check_relay(R, Timeout)
+    end, Relays).

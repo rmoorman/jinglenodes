@@ -1,5 +1,6 @@
 -define(INFO_MSG(M, P), lager:info(M, P)).
 -define(ERROR_MSG(M, P), lager:error(M, P)).
+-define(DEBUG_MSG(M, P), lager:debug(M, P)).
 -define(NS_CHANNEL, 'http://jabber.org/protocol/jinglenodes#channel').
 -define(NAME_CHANNEL, 'channel').
 -define(NS_CHANNEL_REDIRECT, 'http://jabber.org/protocol/jinglenodes#channelredirect').

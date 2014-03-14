@@ -30,8 +30,6 @@ start() ->
 %%      StartArgs = term()
 %% @end
 %%--------------------------------------------------------------------
-start() ->
-	application:start(jn_component).
 
 start(_StartType, _StartArgs) ->
     ?INFO_MSG("Loading Application", []),
