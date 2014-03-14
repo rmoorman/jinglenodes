@@ -140,7 +140,7 @@ check_relay(#relay{pid = PID, user = U, id = ID, creationTime = CT}, Timeout) ->
     UsedR = timer:now_diff(TR, CT),
     Used = trunc(max(UsedL, UsedR) / 1000000),
     if
-        DeltaL > Timeout orelse DeltaR > Timeout ->
+        DeltaL > Timeout andalso DeltaR > Timeout ->
             ?INFO_MSG("Channel Killed: ~p Used for:~ps Processed:~p packets~n", [U, Used, NP]),
             gen_server:cast(PID, stop),
             gen_server:cast(jn_component, {notify_channel, ID, U, killed, Used}),
