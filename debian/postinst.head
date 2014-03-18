@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# postint script
+
+set -e
+
