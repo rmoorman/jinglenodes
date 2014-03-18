@@ -21,6 +21,10 @@ INSTDIR=$(pwd)/installdir
 FPM=$(gem which fpm | sed 's/\/lib\/fpm.rb/\/bin\/fpm/g')
 TAG=$(git describe --always --tag)
 
+if [ ! -z "$3" ]; then
+    TAG="$3"
+fi
+
 #check if gem and fpm are installed
 echo "You must have rubygems, fpm, and build-essential installed..."
 
