@@ -37,7 +37,7 @@
     npackets :: integer()
 }).
 
--define(SOCKOPTS, [binary, {active, once}]).
+-define(SOCKOPTS, [binary, {active, once}, {reuseaddr, true}]).
 
 %%====================================================================
 %% API
