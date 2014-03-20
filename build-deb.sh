@@ -1,20 +1,28 @@
 #!/bin/bash
 #
 # Authors: Jorge Espada <jespada@yuilop.com> & Manuel Rubio <manuel@yuilop.com>
-#
+# 
 # You need to have installed rubygems, fpm[0] gem (gem install fpm) and build-essential
 # [0] https://github.com/jordansissel/fpm/wiki
 
+
+# 
+# Usage: ./build-deb.sh username directory_name
+# example: ./build-deb.sh sjin360 sjinglenodes-in-360
+#          (install path will be /opt/sjinglenodes-in-360)
+#
+
 USER=jnode
+SERVER_USER=$1
 GROUP=jnode
-PROJECT=jinglenodes
+PROJECT=$2
 
 INSTDIR=$(pwd)/installdir
 FPM=$(gem which fpm | sed 's/\/lib\/fpm.rb/\/bin\/fpm/g')
 TAG=$(git describe --always --tag)
 
-if [ ! -z "$1" ]; then
-    TAG="$1"
+if [ ! -z "$3" ]; then
+    TAG="$3"
 fi
 
 #check if gem and fpm are installed
@@ -41,9 +49,17 @@ fi
 
 rm -rf $INSTDIR
 mkdir -p $INSTDIR/$PROJECT
-cp -a rel/$PROJECT $INSTDIR/
+cp -a rel/jinglenodes/* $INSTDIR/$PROJECT/
+
+# generate postinst script
+
+cat debian/postinst.head > $INSTDIR/postinst
+echo "SERVER_USER=$SERVER_USER" >> $INSTDIR/postinst
+echo "SERVER_GROUP=$GROUP" >> $INSTDIR/postinst
+echo "SERVER_HOME=/opt/$PROJECT" >> $INSTDIR/postinst
+cat debian/postinst.tail >> $INSTDIR/postinst
 
 #build the package
 pushd $INSTDIR
-$FPM -s dir -t deb -n $PROJECT -v $TAG -C $INSTDIR --description "JingleNodes Erlang Server" -p jinglenodes-VERSION_ARCH.deb --config-files /opt/$PROJECT/etc/app.config --prefix /opt --deb-user $USER --deb-group $GROUP --url http://www.yuilop.com/ --vendor Yuilop --maintainer '"Manuel Rubio" <manuel@yuilop.com>' $PROJECT
+$FPM -s dir -t deb -n $PROJECT -v $TAG -C $INSTDIR --description "JingleNodes Erlang Server" -p $PROJECT-VERSION_ARCH.deb --after-install postinst --config-files /opt/$PROJECT/etc/app.config --prefix /opt --deb-user $USER --deb-group $GROUP --url http://www.upptalk.com/ --vendor Yuilop --maintainer '"Raul Martinez" <raul.martinez@upptalk.com>' $PROJECT
 
