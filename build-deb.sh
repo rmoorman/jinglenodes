@@ -8,8 +8,6 @@
 
 # 
 # Usage: ./build-deb.sh username directory_name
-# example: ./build-deb.sh sjin360 sjinglenodes-in-360
-#          (install path will be /opt/sjinglenodes-in-360)
 #
 
 USER=jnode
