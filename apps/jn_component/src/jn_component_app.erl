@@ -30,11 +30,11 @@ start() ->
 %%      StartArgs = term()
 %% @end
 %%--------------------------------------------------------------------
+
 start(_StartType, _StartArgs) ->
-    ?INFO_MSG("Loading Application",[]),
-    [Conf] = confetti:fetch(mgmt_conf),
+    ?INFO_MSG("Loading Application", []),
     prepare_tables(),
-    JNConf = proplists:get_value(jn_component, Conf, []),
+    JNConf = application:get_all_env(jn_component),
     {InitPort, EndPort} = proplists:get_value(port_range, JNConf),
     {MaxPerPeriod, PeriodSeconds} = proplists:get_value(throttle, JNConf),
     jn_component_sup:start_link(#jnstate{
@@ -60,7 +60,7 @@ start(_StartType, _StartArgs) ->
 %% @end
 %%--------------------------------------------------------------------
 stop(State) ->
-    ?INFO_MSG("Terminating: ~p~n",[State]),
+    ?INFO_MSG("Terminating: ~p~n", [State]),
     ok.
 
 %%%===================================================================
@@ -69,10 +69,10 @@ stop(State) ->
 
 prepare_tables() ->
     mnesia:create_table(jn_relay_service,
-            [{disc_only_copies, [node()]},
-             {type, set},
-             {attributes, record_info(fields, jn_relay_service)}]),
+        [{disc_only_copies, [node()]},
+            {type, set},
+            {attributes, record_info(fields, jn_relay_service)}]),
     mnesia:create_table(jn_tracker_service,
-            [{disc_only_copies, [node()]},
-             {type, set},
-             {attributes, record_info(fields, jn_tracker_service)}]).
+        [{disc_only_copies, [node()]},
+            {type, set},
+            {attributes, record_info(fields, jn_tracker_service)}]).
